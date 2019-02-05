@@ -2,6 +2,7 @@ package cafe.adriel.androidaudiorecorder.example;
 
 import android.Manifest;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Environment;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import cafe.adriel.androidaudiorecorder.AndroidAudioRecorder;
+import cafe.adriel.androidaudiorecorder.TypefaceHelper;
 import cafe.adriel.androidaudiorecorder.model.AudioChannel;
 import cafe.adriel.androidaudiorecorder.model.AudioSampleRate;
 import cafe.adriel.androidaudiorecorder.model.AudioSource;
@@ -47,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void recordAudio(View v) {
+        TypefaceHelper.DEFAULT = Typeface.createFromAsset(getAssets(), "fonts/IRANSansMobile-Regular.ttf");
+
         AndroidAudioRecorder.with(this)
                 // Required
                 .setFilePath(AUDIO_FILE_PATH)

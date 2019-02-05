@@ -116,6 +116,8 @@ public class AudioRecorderActivity extends AppCompatActivity
         recordView = (ImageButton) findViewById(R.id.record);
         playView = (ImageButton) findViewById(R.id.play);
 
+        statusView.setTypeface(TypefaceHelper.DEFAULT);
+
         contentLayout.setBackgroundColor(Util.getDarkerColor(color));
         contentLayout.addView(visualizerView, 0);
         restartView.setVisibility(View.INVISIBLE);
