@@ -64,7 +64,7 @@ public class AudioRecorderActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.aar_activity_audio_recorder);
 
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             filePath = savedInstanceState.getString(AndroidAudioRecorder.EXTRA_FILE_PATH);
             source = (AudioSource) savedInstanceState.getSerializable(AndroidAudioRecorder.EXTRA_SOURCE);
             channel = (AudioChannel) savedInstanceState.getSerializable(AndroidAudioRecorder.EXTRA_CHANNEL);
@@ -82,7 +82,7 @@ public class AudioRecorderActivity extends AppCompatActivity
             keepDisplayOn = getIntent().getBooleanExtra(AndroidAudioRecorder.EXTRA_KEEP_DISPLAY_ON, false);
         }
 
-        if(keepDisplayOn){
+        if (keepDisplayOn) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
 
@@ -116,14 +116,15 @@ public class AudioRecorderActivity extends AppCompatActivity
         recordView = (ImageButton) findViewById(R.id.record);
         playView = (ImageButton) findViewById(R.id.play);
 
-        statusView.setTypeface(TypefaceHelper.DEFAULT);
+        if (TypefaceHelper.DEFAULT != null)
+            statusView.setTypeface(TypefaceHelper.DEFAULT);
 
         contentLayout.setBackgroundColor(Util.getDarkerColor(color));
         contentLayout.addView(visualizerView, 0);
         restartView.setVisibility(View.INVISIBLE);
         playView.setVisibility(View.INVISIBLE);
 
-        if(Util.isBrightColor(color)) {
+        if (Util.isBrightColor(color)) {
             ContextCompat.getDrawable(this, R.drawable.aar_ic_clear)
                     .setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
             ContextCompat.getDrawable(this, R.drawable.aar_ic_check)
@@ -139,7 +140,7 @@ public class AudioRecorderActivity extends AppCompatActivity
     @Override
     public void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if(autoStart && !isRecording){
+        if (autoStart && !isRecording) {
             toggleRecording(null);
         }
     }
@@ -149,7 +150,8 @@ public class AudioRecorderActivity extends AppCompatActivity
         super.onResume();
         try {
             visualizerView.onResume();
-        } catch (Exception e){ }
+        } catch (Exception e) {
+        }
     }
 
     @Override
@@ -157,7 +159,8 @@ public class AudioRecorderActivity extends AppCompatActivity
         restartRecording(null);
         try {
             visualizerView.onPause();
-        } catch (Exception e){ }
+        } catch (Exception e) {
+        }
         super.onPause();
     }
 
@@ -167,7 +170,8 @@ public class AudioRecorderActivity extends AppCompatActivity
         setResult(RESULT_CANCELED);
         try {
             visualizerView.release();
-        } catch (Exception e){ }
+        } catch (Exception e) {
+        }
         super.onDestroy();
     }
 
@@ -228,12 +232,12 @@ public class AudioRecorderActivity extends AppCompatActivity
         });
     }
 
-    public void togglePlaying(View v){
+    public void togglePlaying(View v) {
         pauseRecording();
         Util.wait(100, new Runnable() {
             @Override
             public void run() {
-                if(isPlaying()){
+                if (isPlaying()) {
                     stopPlaying();
                 } else {
                     startPlaying();
@@ -242,16 +246,16 @@ public class AudioRecorderActivity extends AppCompatActivity
         });
     }
 
-    public void restartRecording(View v){
-        if(isRecording) {
+    public void restartRecording(View v) {
+        if (isRecording) {
             stopRecording();
-        } else if(isPlaying()) {
+        } else if (isPlaying()) {
             stopPlaying();
         } else {
             visualizerHandler = new VisualizerHandler();
             visualizerView.linkTo(visualizerHandler);
             visualizerView.release();
-            if(visualizerHandler != null) {
+            if (visualizerHandler != null) {
                 visualizerHandler.stop();
             }
         }
@@ -278,21 +282,21 @@ public class AudioRecorderActivity extends AppCompatActivity
         visualizerHandler = new VisualizerHandler();
         visualizerView.linkTo(visualizerHandler);
 
-        if(recorder == null) {
+        if (recorder == null) {
             timerView.setText("00:00:00");
 
             recorder = OmRecorder.wav(
                     new PullTransport.Default(Util.getMic(source, channel, sampleRate), AudioRecorderActivity.this),
                     new File(filePath));
         }
-        recorder.resumeRecording();
+        recorder.startRecording();
 
         startTimer();
     }
 
     private void pauseRecording() {
         isRecording = false;
-        if(!isFinishing()) {
+        if (!isFinishing()) {
             saveMenuItem.setVisible(true);
         }
         statusView.setText(R.string.aar_paused);
@@ -303,7 +307,7 @@ public class AudioRecorderActivity extends AppCompatActivity
         playView.setImageResource(R.drawable.aar_ic_play);
 
         visualizerView.release();
-        if(visualizerHandler != null) {
+        if (visualizerHandler != null) {
             visualizerHandler.stop();
         }
 
@@ -314,22 +318,26 @@ public class AudioRecorderActivity extends AppCompatActivity
         stopTimer();
     }
 
-    private void stopRecording(){
+    private void stopRecording() {
         visualizerView.release();
-        if(visualizerHandler != null) {
+        if (visualizerHandler != null) {
             visualizerHandler.stop();
         }
 
         recorderSecondsElapsed = 0;
         if (recorder != null) {
-            recorder.stopRecording();
+            try {
+                recorder.stopRecording();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             recorder = null;
         }
 
         stopTimer();
     }
 
-    private void startPlaying(){
+    private void startPlaying() {
         try {
             stopRecording();
             player = new MediaPlayer();
@@ -352,40 +360,41 @@ public class AudioRecorderActivity extends AppCompatActivity
 
             playerSecondsElapsed = 0;
             startTimer();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void stopPlaying(){
+    private void stopPlaying() {
         statusView.setText("");
         statusView.setVisibility(View.INVISIBLE);
         playView.setImageResource(R.drawable.aar_ic_play);
 
         visualizerView.release();
-        if(visualizerHandler != null) {
+        if (visualizerHandler != null) {
             visualizerHandler.stop();
         }
 
-        if(player != null){
+        if (player != null) {
             try {
                 player.stop();
                 player.reset();
-            } catch (Exception e){ }
+            } catch (Exception e) {
+            }
         }
 
         stopTimer();
     }
 
-    private boolean isPlaying(){
+    private boolean isPlaying() {
         try {
             return player != null && player.isPlaying() && !isRecording;
-        } catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
 
-    private void startTimer(){
+    private void startTimer() {
         stopTimer();
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -396,7 +405,7 @@ public class AudioRecorderActivity extends AppCompatActivity
         }, 0, 1000);
     }
 
-    private void stopTimer(){
+    private void stopTimer() {
         if (timer != null) {
             timer.cancel();
             timer.purge();
@@ -408,10 +417,10 @@ public class AudioRecorderActivity extends AppCompatActivity
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(isRecording) {
+                if (isRecording) {
                     recorderSecondsElapsed++;
                     timerView.setText(Util.formatSeconds(recorderSecondsElapsed));
-                } else if(isPlaying()){
+                } else if (isPlaying()) {
                     playerSecondsElapsed++;
                     timerView.setText(Util.formatSeconds(playerSecondsElapsed));
                 }

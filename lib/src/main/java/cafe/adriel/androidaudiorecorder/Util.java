@@ -7,6 +7,8 @@ import android.os.Handler;
 import cafe.adriel.androidaudiorecorder.model.AudioChannel;
 import cafe.adriel.androidaudiorecorder.model.AudioSampleRate;
 import cafe.adriel.androidaudiorecorder.model.AudioSource;
+import omrecorder.AudioRecordConfig;
+import omrecorder.PullableSource;
 
 
 public class Util {
@@ -15,29 +17,27 @@ public class Util {
     private Util() {
     }
 
-    public static void wait(int millis, Runnable callback){
+    public static void wait(int millis, Runnable callback) {
         HANDLER.postDelayed(callback, millis);
     }
 
-    public static omrecorder.AudioSource getMic(AudioSource source,
-                                                AudioChannel channel,
-                                                AudioSampleRate sampleRate) {
-        return new omrecorder.AudioSource.Smart(
-                source.getSource(),
+
+    public static PullableSource getMic(AudioSource source, AudioChannel channel, AudioSampleRate sampleRate) {
+        return new PullableSource.Default(new AudioRecordConfig.Default(source.getSource(),
                 AudioFormat.ENCODING_PCM_16BIT,
                 channel.getChannel(),
-                sampleRate.getSampleRate());
+                sampleRate.getSampleRate()));
     }
 
     public static boolean isBrightColor(int color) {
-        if(android.R.color.transparent == color) {
+        if (android.R.color.transparent == color) {
             return true;
         }
-        int [] rgb = {Color.red(color), Color.green(color), Color.blue(color)};
+        int[] rgb = {Color.red(color), Color.green(color), Color.blue(color)};
         int brightness = (int) Math.sqrt(
                 rgb[0] * rgb[0] * 0.241 +
-                rgb[1] * rgb[1] * 0.691 +
-                rgb[2] * rgb[2] * 0.068);
+                        rgb[1] * rgb[1] * 0.691 +
+                        rgb[2] * rgb[2] * 0.068);
         return brightness >= 200;
     }
 
