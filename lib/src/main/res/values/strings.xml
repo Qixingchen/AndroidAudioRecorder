@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">AndroidAudioRecorder</string>
-    <string name="aar_save">ذخیره</string>
-    <string name="aar_paused">متوقف‌شده</string>
-    <string name="aar_recording">در حال ضبط</string>
-    <string name="aar_playing">در حال پخش</string>
+    <string name="aar_save">Save</string>
+    <string name="aar_paused">Paused</string>
+    <string name="aar_recording">Recording</string>
+    <string name="aar_playing">Playing</string>
 </resources>
