@@ -303,7 +303,7 @@ public class AudioRecorderActivity extends AppCompatActivity
         statusView.setVisibility(View.VISIBLE);
         restartView.setVisibility(View.VISIBLE);
         playView.setVisibility(View.VISIBLE);
-        recordView.setImageResource(R.drawable.aar_ic_rec);
+        recordView.setVisibility(View.INVISIBLE);
         playView.setImageResource(R.drawable.aar_ic_play);
 
         visualizerView.release();
